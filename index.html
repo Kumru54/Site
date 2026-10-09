@@ -3,73 +3,221 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apartman İstek & Şikayet Formu</title>
+  <title>Apartman İstek & Şikayet Portalı</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f4f6f9;
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --focus-ring: rgba(2, 132, 199, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 24px 16px;
+      color: var(--text-main);
     }
+
     .container {
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      max-width: 450px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(255, 255, 255, 0.2) inset;
+      max-width: 460px;
       width: 100%;
+      padding: 32px 28px;
+      transition: transform 0.3s ease;
     }
-    h2 { margin-top: 0; color: #1a252f; text-align: center; }
-    p { color: #666; font-size: 14px; text-align: center; margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      background: #e0f2fe;
+      color: var(--primary);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #cccccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      font-size: 14px;
+      padding: 12px 16px;
+      background-color: #f8fafc;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      outline: none;
     }
-    textarea { resize: vertical; height: 100px; }
-    button {
-      width: 100%;
-      background-color: #0088cc;
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 6px;
+
+    input:focus, select:focus, textarea:focus {
+      background-color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--focus-ring);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.5;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 18px;
       cursor: pointer;
     }
-    button:hover { background-color: #006699; }
-    #status { margin-top: 15px; text-align: center; font-weight: bold; display: none; }
-    .success { color: #28a745; }
-    .error { color: #dc3545; }
+
+    button {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background-color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #status {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success {
+      background-color: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 20px;
+      }
+      h2 {
+        font-size: 20px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Apartman Bildirim Formu</h2>
-  <p>İstek, şikayet ve önerilerinizi doğrudan yönetime iletebilirsiniz.</p>
+  <div class="header">
+    <div class="icon-wrapper">🏢</div>
+    <h2>Apartman Bildirim Portalı</h2>
+    <p class="subtitle">İstek, şikayet ve arıza bildirimlerinizi doğrudan yönetime iletebilirsiniz.</p>
+  </div>
 
   <form id="apartmentForm">
     <div class="form-group">
-      <label for="daire">Daire No:</label>
+      <label for="daire">Daire No</label>
       <input type="text" id="daire" placeholder="Örn: Daire 12" required>
     </div>
 
     <div class="form-group">
-      <label for="ad">Ad Soyad (İsteğe Bağlı):</label>
+      <label for="ad">Ad Soyad (İsteğe Bağlı)</label>
       <input type="text" id="ad" placeholder="Anonim kalmak için boş bırakabilirsiniz">
     </div>
 
     <div class="form-group">
-      <label for="tur">Bildirim Türü:</label>
+      <label for="tur">Bildirim Türü</label>
       <select id="tur" required>
         <option value="Şikayet">Şikayet</option>
         <option value="İstek / Öneri">İstek / Öneri</option>
@@ -79,8 +227,8 @@
     </div>
 
     <div class="form-group">
-      <label for="mesaj">Mesajınız:</label>
-      <textarea id="mesaj" placeholder="Detayları buraya yazınız..." required></textarea>
+      <label for="mesaj">Mesajınız</label>
+      <textarea id="mesaj" placeholder="Açıklama veya detayları buraya yazınız..." required></textarea>
     </div>
 
     <button type="submit" id="submitBtn">Yönetime Gönder</button>
@@ -90,10 +238,9 @@
 </div>
 
 <script>
-  // TELEGRAM BİLGİLERİNİZİ AŞAĞIDAKİ ALANLARA YAZIN
+  // TELEGRAM BİLGİLERİNİZİ AŞAĞIDAKİ ALANLARA EKSİKSİZ YAZIN
   const TELEGRAM_BOT_TOKEN = '8850529727:AAF_a-t9WFZxhwhrwEJ7akUYeWdg9f74GjQ';
   const TELEGRAM_CHAT_ID = '6230890080';
-
 
   document.getElementById('apartmentForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -106,11 +253,12 @@
     const tur = document.getElementById('tur').value;
     const mesaj = document.getElementById('mesaj').value;
 
-    const text = `🏢 *YENİ APARTMAN BİLDİRİMİ*\n\n` +
-                 `📍 *Daire No:* ${daire}\n` +
-                 `👤 *Gönderen:* ${ad}\n` +
-                 `📌 *Tür:* ${tur}\n` +
-                 `💬 *Mesaj:* ${mesaj}`;
+    // Telegram için HTML formatı (Özel karakter hatalarını önler)
+    const text = `<b>🏢 YENİ APARTMAN BİLDİRİMİ</b>\n\n` +
+                 `📍 <b>Daire No:</b> ${daire}\n` +
+                 `👤 <b>Gönderen:</b> ${ad}\n` +
+                 `📌 <b>Tür:</b> ${tur}\n` +
+                 `💬 <b>Mesaj:</b> ${mesaj}`;
 
     submitBtn.disabled = true;
     submitBtn.innerText = "Gönderiliyor...";
@@ -122,7 +270,7 @@
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
         text: text,
-        parse_mode: 'Markdown'
+        parse_mode: 'HTML'
       })
     })
     .then(response => response.json())
@@ -132,12 +280,12 @@
         status.innerText = "✅ Bildiriminiz yönetime başarıyla iletildi!";
         document.getElementById('apartmentForm').reset();
       } else {
-        throw new Error('Telegram Hatası');
+        throw new Error(data.description || 'Telegram Hatası');
       }
     })
     .catch(error => {
       status.className = "error";
-      status.innerText = "❌ Bir hata oluştu. Lütfen tekrar deneyin.";
+      status.innerText = "❌ Hata: " + error.message;
     })
     .finally(() => {
       submitBtn.disabled = false;
