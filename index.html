@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apartman İstek & Şikayet Formu</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      max-width: 450px;
+      width: 100%;
+    }
+    h2 { margin-top: 0; color: #1a252f; text-align: center; }
+    p { color: #666; font-size: 14px; text-align: center; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: #333; }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    textarea { resize: vertical; height: 100px; }
+    button {
+      width: 100%;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #006699; }
+    #status { margin-top: 15px; text-align: center; font-weight: bold; display: none; }
+    .success { color: #28a745; }
+    .error { color: #dc3545; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Apartman Bildirim Formu</h2>
+  <p>İstek, şikayet ve önerilerinizi doğrudan yönetime iletebilirsiniz.</p>
+
+  <form id="apartmentForm">
+    <div class="form-group">
+      <label for="daire">Daire No:</label>
+      <input type="text" id="daire" placeholder="Örn: Daire 12" required>
+    </div>
+
+    <div class="form-group">
+      <label for="ad">Ad Soyad (İsteğe Bağlı):</label>
+      <input type="text" id="ad" placeholder="Anonim kalmak için boş bırakabilirsiniz">
+    </div>
+
+    <div class="form-group">
+      <label for="tur">Bildirim Türü:</label>
+      <select id="tur" required>
+        <option value="Şikayet">Şikayet</option>
+        <option value="İstek / Öneri">İstek / Öneri</option>
+        <option value="Arıza / Bakım">Arıza / Bakım</option>
+        <option value="Diğer">Diğer</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="mesaj">Mesajınız:</label>
+      <textarea id="mesaj" placeholder="Detayları buraya yazınız..." required></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Yönetime Gönder</button>
+  </form>
+
+  <div id="status"></div>
+</div>
+
+<script>
+  // TELEGRAM BİLGİLERİNİZİ AŞAĞIDAKİ ALANLARA YAZIN
+  const TELEGRAM_BOT_TOKEN = '8850529727:AAF_a-t9WFZxhwhrwEJ7akUYeWdg9f74GjQ';
+  const TELEGRAM_CHAT_ID = '6230890080';
+
+  document.getElementById('apartmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+    
+    const daire = document.getElementById('daire').value;
+    const ad = document.getElementById('ad').value || 'Belirtilmedi (Anonim)';
+    const tur = document.getElementById('tur').value;
+    const mesaj = document.getElementById('mesaj').value;
+
+    const text = `🏢 *YENİ APARTMAN BİLDİRİMİ*\n\n` +
+                 `📍 *Daire No:* ${daire}\n` +
+                 `👤 *Gönderen:* ${ad}\n` +
+                 `📌 *Tür:* ${tur}\n` +
+                 `💬 *Mesaj:* ${mesaj}`;
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Gönderiliyor...";
+    status.style.display = "none";
+
+    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: text,
+        parse_mode: 'Markdown'
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        status.className = "success";
+        status.innerText = "✅ Bildiriminiz yönetime başarıyla iletildi!";
+        document.getElementById('apartmentForm').reset();
+      } else {
+        throw new Error('Telegram Hatası');
+      }
+    })
+    .catch(error => {
+      status.className = "error";
+      status.innerText = "❌ Bir hata oluştu. Lütfen tekrar deneyin.";
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Yönetime Gönder";
+      status.style.display = "block";
+    });
+  });
+</script>
+
+</body>
+</html>
