@@ -44,7 +44,6 @@
       max-width: 460px;
       width: 100%;
       padding: 32px 28px;
-      transition: transform 0.3s ease;
     }
 
     .header {
@@ -113,7 +112,7 @@
 
     textarea {
       resize: vertical;
-      min-height: 110px;
+      min-height: 100px;
       line-height: 1.5;
     }
 
@@ -124,6 +123,14 @@
       background-position: right 14px center;
       background-size: 18px;
       cursor: pointer;
+    }
+
+    /* Görsel yükleme özel stili */
+    input[type="file"] {
+      padding: 8px;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 13px;
     }
 
     button {
@@ -145,10 +152,6 @@
       background-color: var(--primary-hover);
       box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
       transform: translateY(-1px);
-    }
-
-    button:active {
-      transform: translateY(0);
     }
 
     button:disabled {
@@ -201,14 +204,14 @@
 <div class="container">
   <div class="header">
     <div class="icon-wrapper">🏢</div>
-    <h2>Abdülhamit 2 Site Bildirim Paneli</h2>
+    <h2>Apartman Bildirim Portalı</h2>
     <p class="subtitle">İstek, şikayet ve arıza bildirimlerinizi doğrudan yönetime iletebilirsiniz.</p>
   </div>
 
   <form id="apartmentForm">
     <div class="form-group">
-      <label for="daire">Daire No</label>
-      <input type="text" id="daire" placeholder="Örn: Daire 12" required>
+      <label for="daire">Daire No (İsteğe Bağlı)</label>
+      <input type="text" id="daire" placeholder="Örn: Daire 12 (Anonim için boş bırakın)">
     </div>
 
     <div class="form-group">
@@ -231,6 +234,11 @@
       <textarea id="mesaj" placeholder="Açıklama veya detayları buraya yazınız..." required></textarea>
     </div>
 
+    <div class="form-group">
+      <label for="foto">Fotoğraf Ekle (İsteğe Bağlı)</label>
+      <input type="file" id="foto" accept="image/*">
+    </div>
+
     <button type="submit" id="submitBtn">Yönetime Gönder</button>
   </form>
 
@@ -238,7 +246,7 @@
 </div>
 
 <script>
-  // TELEGRAM BİLGİLERİNİZİ AŞAĞIDAKİ ALANLARA EKSİKSİZ YAZIN
+  // TELEGRAM BİLGİLERİNİZİ BURAYA YAZIN
   const TELEGRAM_BOT_TOKEN = '8850529727:AAF_a-t9WFZxhwhrwEJ7akUYeWdg9f74GjQ';
   const TELEGRAM_CHAT_ID = '6230890080';
 
@@ -248,31 +256,46 @@
     const submitBtn = document.getElementById('submitBtn');
     const status = document.getElementById('status');
     
-    const daire = document.getElementById('daire').value;
+    const daire = document.getElementById('daire').value || 'Belirtilmedi (Anonim)';
     const ad = document.getElementById('ad').value || 'Belirtilmedi (Anonim)';
     const tur = document.getElementById('tur').value;
     const mesaj = document.getElementById('mesaj').value;
+    const fotoInput = document.getElementById('foto');
 
-    // Telegram için HTML formatı (Özel karakter hatalarını önler)
-    const text = `<b>🏢 YENİ APARTMAN BİLDİRİMİ</b>\n\n` +
-                 `📍 <b>Daire No:</b> ${daire}\n` +
-                 `👤 <b>Gönderen:</b> ${ad}\n` +
-                 `📌 <b>Tür:</b> ${tur}\n` +
-                 `💬 <b>Mesaj:</b> ${mesaj}`;
+    const caption = `<b>🏢 YENİ APARTMAN BİLDİRİMİ</b>\n\n` +
+                    `📍 <b>Daire No:</b> ${daire}\n` +
+                    `👤 <b>Gönderen:</b> ${ad}\n` +
+                    `📌 <b>Tür:</b> ${tur}\n` +
+                    `💬 <b>Mesaj:</b> ${mesaj}`;
 
     submitBtn.disabled = true;
     submitBtn.innerText = "Gönderiliyor...";
     status.style.display = "none";
 
-    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    let url, formData;
+
+    // Fotoğraf seçilmiş mi kontrol et
+    if (fotoInput.files.length > 0) {
+      url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+      formData = new FormData();
+      formData.append('chat_id', TELEGRAM_CHAT_ID);
+      formData.append('photo', fotoInput.files[0]);
+      formData.append('caption', caption);
+      formData.append('parse_mode', 'HTML');
+    } else {
+      url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      formData = JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
-        text: text,
+        text: caption,
         parse_mode: 'HTML'
-      })
-    })
+      });
+    }
+
+    const fetchOptions = fotoInput.files.length > 0 
+      ? { method: 'POST', body: formData }
+      : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: formData };
+
+    fetch(url, fetchOptions)
     .then(response => response.json())
     .then(data => {
       if (data.ok) {
